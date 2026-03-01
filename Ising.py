@@ -27,7 +27,9 @@ class Ising:
     # Here you need to complete the function computing the cost as described in the pdf file
     # The cost function depends on the value of the spins and the values of their nearest neighbors
     def cost(self):
-        pass
+        s = self.s
+        # Each nearest-neighbor pair counted once: right shift + down shift
+        return -(np.sum(s * np.roll(s, 1, axis=0)) + np.sum(s * np.roll(s, 1, axis=1)))
 
     ## Propose a valid random move. 
     def propose_move(self):
@@ -43,7 +45,12 @@ class Ising:
     # Here you need complete the compute_delta_cost function as explained in the pdf file
     # Check the constant in front of the delta cost
     def compute_delta_cost(self, move):
-        pass
+        i, j = move
+        N = self.N
+        s = self.s
+        neighbors = (s[(i-1) % N, j] + s[(i+1) % N, j] +
+                     s[i, (j-1) % N] + s[i, (j+1) % N])
+        return 2 * s[i, j] * neighbors
     
     ## Make an entirely independent duplicate of the current object.
     def copy(self):
