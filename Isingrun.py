@@ -16,7 +16,7 @@ Ising = Ising.Ising(N, seed=None)
 # Ising.display()
 
 ## Optimize it.
-s = mcmc.mcmc(Ising,
+s, diag = mcmc.mcmc(Ising,
                 samples = 1, wait=20, burn_in=10000, beta=0.4,
                 seed = None, debug_delta_cost = False) # set to True to enable the check
 

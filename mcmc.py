@@ -33,17 +33,22 @@ def mcmc(probl,
 
     # burn-in phase of the Markov chain
     acc_burn = 0
-    for _ in range(burn_in):
+    N = probl.N
+    sweep_size = N ** 2
+    energy_trace = [E]  # record energy at start and every sweep
+    for step in range(burn_in):
         move = probl.propose_move()
         dE = probl.compute_delta_cost(move)
         if debug_delta_cost:
-            chk = probl.copy(); 
+            chk = probl.copy();
             chk.accept_move(move)
             assert abs(E + dE - chk.cost()) < 1e-10
         if accept(dE, beta):
-            probl.accept_move(move); 
-            E += dE; 
+            probl.accept_move(move);
+            E += dE;
             acc_burn += 1
+        if (step + 1) % sweep_size == 0:
+            energy_trace.append(E)
 
     acc_burn /= burn_in
 
@@ -63,4 +68,9 @@ def mcmc(probl,
     acc_meas /= samples * wait
 
     # print(f"[MCMC] beta={beta:.6f}  acc_burn={acc_burn:.3f}  acc_meas={acc_meas:.3f}")
-    return snaps
+    diagnostics = {
+        "acc_burn": acc_burn,
+        "acc_meas": acc_meas,
+        "energy_trace": energy_trace,
+    }
+    return snaps, diagnostics

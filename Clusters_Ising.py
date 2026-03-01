@@ -15,11 +15,26 @@ def find_clusters(sample):
         i0 = s0//N; j0 = s0%N
 
         sign = sample[i0,j0] # find the sign of the spins in the cluster
+        done = set()
+        todo = set()
         todo.add(s0)
         count = 1
 
-        ## TODO: complete the cluster growth part algorithm
-
+        while len(todo) > 0:
+            s = todo.pop()
+            i = s // N
+            j = s % N
+            for (di, dj) in [(0,1), (1,0), (-1,0), (0,-1)]:
+                ii = (i + di) % N
+                jj = (j + dj) % N
+                ss = N * ii + jj
+                if sample[ii, jj] != sign:
+                    continue
+                if ss not in done and ss not in todo and mask[ss]:
+                    todo.add(ss)
+                    count += 1
+            done.add(s)
+            mask[s] = False
 
         cluster_sizes.append(count)
 
